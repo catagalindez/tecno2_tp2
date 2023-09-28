@@ -11,23 +11,24 @@ import fisica.*;
 Minim minim;
 AudioPlayer musica;
 
+Obstaculo obstaculo;
+Astronauta astronauta;
+Nave nave;
+
 int PUERTO_OSC = 12345;
 
 Receptor receptor;
 
-PImage fondo;
+PImage fondo1, fondo2, fondo3, fondo4, fondo5;
+PFont pixeloid;
 
 FWorld world;
 FCircle c1;
-FCircle obs1;
-FCircle obs2;
-FCircle obs3;
-FCircle obs4;
-FCircle obs5;
+FCircle obs1, obs2, obs3, obs4, obs5;
 
-float xConMouseX=300;
-boolean pjCreado = false;
-float posX = 300;
+float x = 300;
+float y = 800;
+float  diam = 20;
 
 boolean randomOff = false;
 boolean resetCuenta = false;
@@ -36,14 +37,32 @@ boolean derecha;
 boolean izquierda;
 boolean arriba;
 boolean abajo;
+boolean refreshDanio = false;
+int cuentaDanio = 200;
 int cuenta;
 int fx;
 int fy;
+int puntos = 5;
+int puntosParaPerder = 0;
+int segundos = 30;
 
+
+int pantalla = 1;
 
 void setup() {
   size(600, 1000);
-  fondo = loadImage("espacio1.jpg");
+
+  astronauta = new Astronauta(x, y, diam);
+  obstaculo = new Obstaculo();
+  nave = new Nave();
+
+  fondo1 = loadImage("inicio.jpeg");
+  fondo2 = loadImage("instrucciones.jpeg");
+  fondo3 = loadImage("espacio1.jpg");
+  fondo4 = loadImage("perder.jpg");
+  fondo5 = loadImage("ganar.jpg");
+
+  pixeloid = createFont("PixeloidSans.ttf", 32);
 
   minim = new Minim(this);
   musica = minim.loadFile("musica.wav");
@@ -56,46 +75,44 @@ void setup() {
   setupOSC(PUERTO_OSC);
   receptor = new Receptor();
 
-  crearPJ();
-  crearObstaculo();
+  astronauta.crearPJ();
+  obstaculo.crearObstaculo();
 }
 
 void draw() {
   background(255);
-  fondo.resize(width, height);
-  image(fondo, 0, 0);
+  //INICIO
+  if (pantalla == 1) {
+    fondo1.resize(width, height);
+    image (fondo1, 0, 0);
+  }
+  //INSTRUCCIONES
+  else if (pantalla ==2) {
+    fondo2.resize(width, height);
+    image(fondo2, 0, 0);
+  }
+  //JUEGO
+  else if (pantalla ==3) {
+    fondo3.resize(width, height);
+    image(fondo3, 0, 0);
+    //cosas que se inician cuando empieza el juego
+    musica.play();
+    world.step();
+    world.draw();
 
-  musica.play();
-  world.step();
-  world.draw();
-  resetearRandom();
-  tiempoDeEspera();
-  impulsarObjetos();
-  moverAstronauta();
-
-
-
-  receptor.actualizar(mensajes); //  
-  //receptor.dibujarBlobs(width, height);
-
-
-  // Eventos de entrada y salida
-  for (Blob b : receptor.blobs) {
-    println(b.centerY);
-    if (b.centerX > 0.55) {
-      derecha = true;
-      izquierda = false;
-    } else if (b.centerX < 0.45) {
-      derecha = false;
-      izquierda = true;
-    }
-    if (b.centerY < 0.40) {
-      arriba = true;
-      abajo = false;
-    } else if (b.centerY > 0.75) {
-      arriba = false;
-      abajo = true;
-    }
+    nave.dibujar();
+    juego();
+    lugarDeCara();
+  }
+  //PERDER
+  else if (pantalla == 4) {
+    fondo4.resize(width, height);
+    image(fondo4, 0, 0);
+    segundos = 30;
+  } else if (pantalla == 5) {
+    fondo5.resize(width, height);
+    image(fondo5, 0, 0);
+    segundos = 30;
   }
 }
 
@@ -105,6 +122,20 @@ void keyPressed() {
   }
   if (keyCode == LEFT) {
     c1.addForce(-100000, 0);
+  }
+  if (keyCode == UP) {
+    c1.addForce(0, -100000);
+  }
+  if (keyCode == DOWN) {
+    c1.addForce(0, 100000);
+  }
+
+
+  if ( pantalla == 1 && keyCode == 'i' || keyCode == 'I' ) {
+    pantalla = 2;
+  }
+  if ( pantalla == 2 && keyCode == 'c' || keyCode == 'C' ) {
+    pantalla = 3;
   }
 }
 
@@ -120,13 +151,5 @@ void moverAstronauta() {
   }
   if (abajo == true && arriba == false) {
     c1.addForce(0, 20000);
-  }
-}
-
-void resetearRandom() {
-  if (randomOff == false) {    
-    fx=round(random(-50000, 50000));
-    fy=round(random(-50000, 50000));
-    randomOff = true;
   }
 }

@@ -15,3 +15,20 @@ void tiempoDeEspera(){
   impulso = true;
   }  
 }
+
+void cuentaRegresivaDanio(){
+  if (refreshDanio == true){
+    if(cuentaDanio >= 0){
+    cuentaDanio --;
+    } else {
+      refreshDanio = false;
+      cuentaDanio = 200;
+    }
+  }
+}
+
+void tiempoDeJuego (){
+  if (segundos > 0 && frameCount%60 == 0){
+    segundos -= 1;
+  }
+}
