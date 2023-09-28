@@ -137,6 +137,9 @@ void keyPressed() {
   if ( pantalla == 2 && keyCode == 'c' || keyCode == 'C' ) {
     pantalla = 3;
   }
+  if ( pantalla == 5 || pantalla == 4 && keyCode == ' '){
+    pantalla = 1;
+  }
 }
 
 void moverAstronauta() {

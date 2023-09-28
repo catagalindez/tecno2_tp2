@@ -13,7 +13,7 @@ class Nave {
     mover();
   }
 
-  void dibujarNave(){
+  void dibujarNave() {
     pushStyle();
     imageMode(CENTER);
     image(imgNave, posX, posY);
@@ -24,5 +24,9 @@ class Nave {
     if (posY < height/2) {
       posY ++;
     }
+  }
+
+  void reiniciar () {
+    posY = -height-height/3;
   }
 }

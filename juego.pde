@@ -59,10 +59,12 @@ void cambiarPantalla() {
   if ( pantalla == 3 && puntos == puntosParaPerder) {
     pantalla = 4;
     puntos = 5;
+    nave.reiniciar();
   }
   if ( pantalla == 3 && segundos == 0 ) {
     pantalla = 5;
     puntos = 5;
+    nave.reiniciar();
   }
 }
 
