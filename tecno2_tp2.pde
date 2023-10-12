@@ -10,10 +10,16 @@ import oscP5.*;
 import fisica.*;
 Minim minim;
 AudioPlayer musica;
+AudioPlayer intro;
+AudioPlayer ganar;
+AudioPlayer perder;
+AudioPlayer colision;
+AudioPlayer victoria;
 
 Obstaculo obstaculo;
 Astronauta astronauta;
 Nave nave;
+Vida vida;
 
 int PUERTO_OSC = 12345;
 
@@ -22,9 +28,11 @@ Receptor receptor;
 PImage fondo1, fondo2, fondo3, fondo4, fondo5;
 PFont pixeloid;
 
+PImage fondoContador;
+
 FWorld world;
 FCircle c1;
-FCircle obs1, obs2, obs3, obs4, obs5;
+FCircle obs1,obs2,obs3,obs4,obs5,obs6;
 
 float x = 300;
 float y = 800;
@@ -55,6 +63,7 @@ void setup() {
   astronauta = new Astronauta(x, y, diam);
   obstaculo = new Obstaculo();
   nave = new Nave();
+  vida = new Vida(puntos);
 
   fondo1 = loadImage("inicio.jpeg");
   fondo2 = loadImage("instrucciones.jpeg");
@@ -62,10 +71,18 @@ void setup() {
   fondo4 = loadImage("perder.jpg");
   fondo5 = loadImage("ganar.jpg");
 
+  fondoContador = loadImage("timer.png");
+
   pixeloid = createFont("PixeloidSans.ttf", 32);
 
   minim = new Minim(this);
   musica = minim.loadFile("musica.wav");
+  ganar = minim.loadFile("ganar.wav");
+  perder = minim.loadFile("perder.wav");
+  intro = minim.loadFile("intro.mp3");
+  colision = minim.loadFile("colision.wav");
+  victoria = minim.loadFile("victoria.mp3");
+    
 
   Fisica.init(this);
   world = new FWorld();
@@ -85,18 +102,26 @@ void draw() {
   if (pantalla == 1) {
     fondo1.resize(width, height);
     image (fondo1, 0, 0);
+    musica.play();
+    victoria.rewind();
+    intro.rewind();
   }
   //INSTRUCCIONES
   else if (pantalla ==2) {
     fondo2.resize(width, height);
     image(fondo2, 0, 0);
+    victoria.rewind();
+    intro.rewind();
+
   }
   //JUEGO
   else if (pantalla ==3) {
     fondo3.resize(width, height);
     image(fondo3, 0, 0);
     //cosas que se inician cuando empieza el juego
-    musica.play();
+    intro.play();
+    musica.rewind();
+    victoria.rewind();
     world.step();
     world.draw();
 
@@ -109,10 +134,18 @@ void draw() {
     fondo4.resize(width, height);
     image(fondo4, 0, 0);
     segundos = 30;
+    perder.play();
+    intro.rewind();
+    musica.rewind();
+    victoria.rewind();
   } else if (pantalla == 5) {
     fondo5.resize(width, height);
     image(fondo5, 0, 0);
     segundos = 30;
+    ganar.play();
+    intro.rewind();
+    musica.rewind();
+    victoria.play();
   }
 }
 
@@ -137,7 +170,7 @@ void keyPressed() {
   if ( pantalla == 2 && keyCode == 'c' || keyCode == 'C' ) {
     pantalla = 3;
   }
-  if ( pantalla == 5 || pantalla == 4 && keyCode == ' '){
+  if ( pantalla == 5 || pantalla == 4 && keyCode == ' ') {
     pantalla = 1;
   }
 }

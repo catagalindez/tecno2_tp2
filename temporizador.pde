@@ -1,3 +1,5 @@
+
+
 void tiempoRandom() {
   if (resetCuenta == false){
     cuenta=round(random(50,200));
@@ -21,6 +23,7 @@ void cuentaRegresivaDanio(){
     if(cuentaDanio >= 0){
     cuentaDanio --;
     } else {
+      colision.rewind();
       refreshDanio = false;
       cuentaDanio = 200;
     }

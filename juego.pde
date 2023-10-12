@@ -9,7 +9,7 @@ void juego() {
 
   temporizador();
 
-  println("punto: "+puntos+" refresh: "+refreshDanio+" "+segundos);
+  vida.dibujarVida(puntos);
 }
 
 void lugarDeCara() {
@@ -36,8 +36,8 @@ void lugarDeCara() {
 
 void resetearRandom() {
   if (randomOff == false) {    
-    fx=round(random(-50000, 50000));
-    fy=round(random(-50000, 50000));
+    fx=round(random(-100000, 100000));
+    fy=round(random(-100000, 100000));
     randomOff = true;
   }
 }
@@ -48,6 +48,7 @@ void verColisiones() {
     FContact fc = contacts.get(i);
     if (fc.contains("obstaculo")) {
       if (refreshDanio == false) {
+        colision.play();
         puntos--;
         refreshDanio = true;
       }
@@ -69,19 +70,16 @@ void cambiarPantalla() {
 }
 
 void temporizador() {
+  image(fondoContador, 0, 0);
+  fondoContador.resize(200, 100);
   tiempoDeJuego();
   pushStyle();
   textFont(pixeloid);
-  fill(225, 25, 25);
-  text ("Tiempo: "+segundos, 30, 50);
+  fill(250, 25, 50);
+  text ("00:"+nf(segundos, 2), 55, 65);
   popStyle();
 }
 
 void vidas() {
   verColisiones();
-  pushStyle();
-  textFont(pixeloid);
-  fill(225, 25, 25);
-  text ("Vidas: "+puntos, 450, 50);
-  popStyle();
 }
